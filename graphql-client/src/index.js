@@ -6,7 +6,6 @@ import { SubscriptionClient } from 'subscriptions-transport-ws'
 import MessageTypes from 'subscriptions-transport-ws/dist/message-types'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
-import { createPersistedQueryLink } from 'apollo-link-persisted-queries'
 import { setContext } from 'apollo-link-context'
 import { withClientState } from 'apollo-link-state'
 
@@ -20,8 +19,6 @@ export function createApolloClient ({
   wsEndpoint = null,
   // Token used in localstorage
   tokenName = 'apollo-token',
-  // Enable this if you use Query persisting with Apollo Engine
-  persisting = false,
   // Is currently Server-Side Rendering or not
   ssr = false,
   // Only use Websocket for all requests (including queries and mutations)
@@ -103,17 +100,6 @@ export function createApolloClient ({
       if (state && state[clientId]) {
         // Restore state
         cache.restore(state[clientId])
-      }
-    }
-
-    if (!disableHttp) {
-      let persistingOpts = {}
-      if (typeof persisting === 'object' && persisting != null) {
-        persistingOpts = persisting
-        persisting = true
-      }
-      if (persisting === true) {
-        link = createPersistedQueryLink(persistingOpts).concat(link)
       }
     }
 
